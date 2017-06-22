@@ -1,5 +1,6 @@
 library(fivethirtyeight)
 library(stringr)
+library(tidyverse)
 
 state <- bad_drivers$state
 

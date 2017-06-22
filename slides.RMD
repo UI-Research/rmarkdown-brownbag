@@ -324,20 +324,16 @@ An increase in travel speed of one mile per hour is associated with a `r round(m
 
 [Bookdown](https://bookdown.org/)
 
-## More!
-
-- [websites](http://rmarkdown.rstudio.com/rmarkdown_websites.html) - Complete websites
-- [flexdashboard::flex_dashboard](http://rmarkdown.rstudio.com/flexdashboard/) - Interactive dashboards
-- [tufte::tufte_html](http://rmarkdown.rstudio.com/tufte_handout_format.html) - HTML handouts in the style of Edward Tufte
-
 # Parameters
+
+## YAML
 
 ```{r eval=FALSE}
 ---
 title: "Parameters"
 output: html_document
 params:
-	data: ""
+	data: 
 ---
 	
 params$data
@@ -384,5 +380,9 @@ R Markdown and LaTeX are compliments, not substitutes.
 >- [R Studio](http://rmarkdown.rstudio.com/)
 >- [R Studio Gallery](http://rmarkdown.rstudio.com/gallery.html)
 >- [Email Me!](awilliams@urban.org)
+
+## R Lunch Lab
+
+![lunch lab](images/OWL.jpg)
 
 ## Questions and Comments?

@@ -1,49 +1,56 @@
 ---
 title: "Demonstration"
 author: "Aaron Williams"
-date: "6/21/2017"
-output: 
-  html_document:
-    code_folding: hide
-    toc: true
-    toc_float: TRUE 
+date: "6/22/2017"
+output: html_document
 params:
   state: "Alabama"
 ---
 
-```{r settings, echo=FALSE}
-knitr::opts_chunk$set(message=FALSE)
+```{r options}
+knitr::opts_chunk$set(message = FALSE)
 ```
 
-## Load Packages and Data
+## Load Packages
 ```{r load packages}
 library(tidyverse)
 library(knitr)
 library(fivethirtyeight)
 
-source('https://raw.githubusercontent.com/UrbanInstitute/urban_R_theme/master/urban_theme_mac.R')
-
-bad_drivers
+source('https://raw.githubusercontent.com/UrbanInstitute/urban_R_theme/master/urban_theme_windows.R')
 ```
 
 ## Regression
 ```{r cars}
-model <- lm(data = mtcars, mpg ~ hp)
+model <- lm(data = mtcars, mpg ~ wt)
 summary(model)
 ```
 
 ## Chart
+
+This is a chart. 
 ```{r chart}
 bad_drivers %>%
-	select(state, perc_speeding, perc_alcohol, perc_not_distracted) %>%
-	gather(key = "measure", value = "value", -state) %>%
-	filter(state == params$state) %>%
-	ggplot(aes(measure, value)) +
-		geom_bar(stat = "identity") +
-	labs(title = params$state)
+  select(state, perc_speeding, perc_alcohol, perc_not_distracted) %>%
+  gather(key = "key", value = "value", -state) %>%
+  filter(state == params$state) %>%
+  ggplot(aes(key, value)) +
+    geom_bar(stat = "identity") +
+  labs(title = params$state)
 ```
 
-```{r table}
+## Table 
+```{r}
 cars <- head(mtcars)
-kable(cars, format = "markdown", caption = "Figure 1.1")
+kable(cars, format = "markdown")
 ```
+
+
+
+
+
+
+
+
+
+
