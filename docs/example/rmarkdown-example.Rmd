@@ -1,0 +1,148 @@
+---
+output: 
+  html_document:
+    css: www/styles.css
+    self_contained: TRUE
+    code_folding: show
+    toc: TRUE
+    toc_float: TRUE
+params:
+  year: "2010"
+  diamonds_data: "data/diamonds2010.csv"
+---
+
+<div id="header">
+![](www/images/urban-institute-logo.png)
+
+## Introduction
+
+#### R Markdown Example
+#### Aaron Williams
+#### `r format(Sys.time(), '%B %d, %Y')`
+
+This analysis looks at diamond data from `r params$year` from the file `r params$diamonds_data` to demonstrate the power of R Markdown for building reproducible and scalable reports. This analysis loads data, builds a simple plot, creates a simple model, and looks at the residuals from that model. The data set is parameterized so the report can be easily replicated across different data. It is common to scale reports across time, geographies, or any subgroup that can be parameterized. 
+
+R markdown combines text chunks, code chunks, and code output into a range of output including .html documents, PDFs, books, and websites. This is a "text chunk". The information below is a "code chunk." The plot further down is an output "chunk". 
+
+```{r markdown setup, include=FALSE}
+# Turn off messages
+knitr::opts_chunk$set(message = FALSE)
+
+# Turn on chunk output
+knitr::opts_chunk$set(echo = TRUE)
+
+# Turn off warnings
+knitr::opts_chunk$set(warning = FALSE)
+
+# Turn off scientific notation
+options(scipen = 999)
+```
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(DT)
+
+source('https://raw.githubusercontent.com/UrbanInstitute/urban_R_theme/master/urban_theme_windows.R')
+```
+
+## Read data
+```{r read data}
+diamonds <- read_csv(params$diamonds_data)
+```
+
+## Summary plot
+```{r summary plot, fig.height=3}
+diamonds %>%
+  ggplot(aes(carat, price)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(~cut) + 
+  scale_y_continuous(labels = scales::dollar) +
+  labs(title = paste(params$year, "Diamond prices by carat and cut quality"),
+       caption = "Urban Institute")
+```
+
+
+## Regression
+
+### Specification
+
+```{r model}
+model1 <- lm(price ~ carat, diamonds)
+```
+
+### Coefficient summary
+```{r model summary}
+tidy(model1) %>%
+  kable(digits = 3)
+```
+
+### Modeled data (static table)
+```{r}
+augment(model1) %>%
+  head() %>%
+  kable(digits = 3)
+```
+
+### Modeled data (dynamic table)
+```{r}
+augment(model1) %>%
+  mutate_all(round, 2) %>%
+  datatable(options = list(pageLength = 5))
+```
+
+
+### Model summary
+
+```{r}
+glance(model1) %>%
+  select(r.squared, adj.r.squared, sigma, statistic, p.value, df) %>%
+  kable(digits = 3)
+```
+
+## Regression plots{.tabset}
+
+```{r regression line}
+
+plotr <- function(confidence_level, confidence_label) {
+  diamonds %>%
+    ggplot(aes(carat, price)) + 
+    geom_point(alpha = 0.5) +
+    stat_smooth(method = "lm", formula = y ~ x, color = "#ec008b", level = confidence_level) +
+    scale_y_continuous(labels = scales::dollar) +
+    labs(title = paste(params$year, "Regression plot for price ~ carat"),
+         subtitle = paste("With", confidence_label, "confidence interval in gray"),
+         caption = "Urban Institute")
+}
+```
+
+### 90% Confidence Interval
+
+```{r 90}
+plotr(0.9, "90%")
+```
+
+### 95% Confidence Interval
+
+```{r 95}
+plotr(0.95, "95%")
+```
+
+### 99% Confidence Interval
+
+```{r 99}
+plotr(0.99, "99%")
+```
+
+## Residual plot
+```{r residual plot}
+augment(model1) %>%
+  ggplot(aes(carat, .resid)) +
+  geom_hline(alpha = 0.8, color = "#ec008b", yintercept = 0, linetype = 2, size = 1) +
+  geom_point(alpha = 0.5) +
+  labs(title = paste(params$year, "Residual plot for price ~ carat"),
+       caption = "Urban Institute") +
+  scale_y_continuous(labels = scales::dollar)
+
+```
